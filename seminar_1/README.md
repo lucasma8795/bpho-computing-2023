@@ -40,14 +40,11 @@ where $\alpha > 0$ and $\beta > 0$.
 
 It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $S = \frac{\alpha}{\beta}$. We define this to be $\rho$, the susceptible threshold. When $S > \rho$, the epidemic grows; when $S < \rho$, the epidemic shrinks.
 ```math
-\newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
-\newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
-\newcommand{\at}[2]{#1|_{#2}}
 \begin{align*}
-	\d{I}{t} & = (\beta S - \alpha)I \\[5pt]
-	\dtwo{I}{t} & = (\beta S - \alpha)\d{I}{t} + (\beta \d{S}{t})I \\[5pt]
+	\frac{\textrm{d} I}{\textrm{d} t} & = (\beta S - \alpha)I \\[5pt]
+	\frac{\textrm{d}^2 I}{\textrm{d} t^2} & = (\beta S - \alpha)\frac{\textrm{d} I}{\textrm{d} t} + (\beta \frac{\textrm{d} S}{\textrm{d} t})I \\[5pt]
 		& = (\beta S - \alpha)^2 I - I^2 \beta^2 S \\[5pt]
-	\dtwo{I}{t}\bigg|_{S=\frac{\alpha}{\beta}} & = (\frac{\alpha}{\beta}\beta - \alpha)^2 - I^2 \beta^2 \frac{\alpha}{\beta} \\[5pt]
+	\frac{\textrm{d}^2 I}{\textrm{d} t^2}\bigg|_{S=\frac{\alpha}{\beta}} & = (\frac{\alpha}{\beta}\beta - \alpha)^2 - I^2 \beta^2 \frac{\alpha}{\beta} \\[5pt]
 		& = -I^2\alpha\beta < 0
 \end{align*}
 ```
@@ -56,13 +53,10 @@ It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I =
 ## 2. Finding $\alpha$, $\beta$
 We first find $\rho=\frac{\alpha}{\beta}$ by integrating $\frac{\textrm{d} I}{\textrm{d} S}$.
 ```math
-\newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
-\newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
-\newcommand{\at}[2]{#1|_{#2}}
 \begin{align*}
-	\d{S}{t} & = -\beta S I \\[5pt]
-	\d{I}{t} & = \beta S I - \alpha I \\[5pt]
-	\therefore \d{I}{S} & = -\frac{\beta S I - \alpha I}{\beta S I} = \frac{\alpha}{\beta}\frac{1}{S}-1 = \rho \frac{1}{S} - 1 \\[5pt]
+	\frac{\textrm{d} S}{\textrm{d} t} & = -\beta S I \\[5pt]
+	\frac{\textrm{d} I}{\textrm{d} t} & = \beta S I - \alpha I \\[5pt]
+	\therefore \frac{\textrm{d} I}{\textrm{d} S} & = -\frac{\beta S I - \alpha I}{\beta S I} = \frac{\alpha}{\beta}\frac{1}{S}-1 = \rho \frac{1}{S} - 1 \\[5pt]
 	\therefore I - I_0 & = \int_{S_0}^{S}\bigg(\rho \frac{1}{S} - 1\bigg) \textrm{d}S = \bigg[\rho \ln S - S\bigg]^S_{S_0} \\[5pt]
 	\therefore I & = I_0 + \rho\ln\frac{S}{S_0} - S + S_0 \\[5pt]
 	\therefore \rho\ln\frac{S}{S_0} & = I_0 + S_0 - I - S \\[5pt]
