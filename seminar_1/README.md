@@ -15,32 +15,33 @@ The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in
 | Sept 3-4 1666 | 2.04 | 108 | 8 |  133.5 |
 | Sept 19 1666 | 2.55 | 97 | 8 | 144.5 |
 | Oct 20 1666 | 3.57 | 83 | 0 | 166.5 |
+
 ![Historical data](./images/historical.png "Historical data")
 
 ---
 ## 1. The Eyam Equations
 The total population ($I + S + D$) should remain constant.
-$$
+```math
 \newcommand\d{\textrm{d}}
 \begin{gather*}
 I + S + D = I_0 + S_0 + \cancel{D_0} \\[5pt]
 \frac{\d I}{\d t} + \frac{\d S}{\d t} + \frac{\d D}{\d t} = 0 \\[5pt]
 \end{gather*}
-$$
+```
 
 The Eyam Equations state that
-$$
+```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \begin{cases}
 \d{D}{t} = \alpha I \\[5pt]
 \d{S}{t} = -\beta S I \\[5pt]
 \d{I}{t} = -\d{D}{t} - \d{S}{t} = \beta S I - \alpha I
 \end{cases}
-$$
+```
 where $\alpha > 0$ and $\beta > 0$.
 
-It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2^nd^ derivative, we find that $I$ is maximized when $ S = \frac{\alpha}{\beta} $. We define this to be $ \rho $, the susceptible threshold. When $ S > \rho$, the epidemic grows; when $ S < \rho $, the epidemic shrinks.
-$$
+It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $ S = \frac{\alpha}{\beta} $. We define this to be $ \rho $, the susceptible threshold. When $ S > \rho$, the epidemic grows; when $ S < \rho $, the epidemic shrinks.
+```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
 \newcommand{\at}[2]{#1|_{#2}}
@@ -51,12 +52,12 @@ $$
 	\dtwo{I}{t}\bigg|_{S=\frac{\alpha}{\beta}} & = (\frac{\alpha}{\beta}\beta - \alpha)^2 - I^2 \beta^2 \frac{\alpha}{\beta} \\[5pt]
 		& = -I^2\alpha\beta < 0
 \end{align*}
-$$
+```
 
 ---
 ## 2. Finding $\alpha$, $\beta$
 We first find $\rho=\frac{\alpha}{\beta}$ by integrating $\frac{\textrm{d} I}{\textrm{d} S}$.
-$$
+```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
 \newcommand{\at}[2]{#1|_{#2}}
@@ -69,7 +70,7 @@ $$
 	\therefore \rho\ln\frac{S}{S_0} & = I_0 + S_0 - I - S \\[5pt]
 	y & = \rho x
 \end{align*}
-$$
+```
 
 ![Alpha/beta regression line graph](./images/ab_regression_line.png "Alpha/beta regression line graph")
 
@@ -93,13 +94,13 @@ If $k$ is the mean rate of an event occuring independently in a time period, the
 
 We have the following set of modified equations:
 
-$$
+```math
 \begin{cases}
 \Delta D = \textrm{Po}(\alpha I \Delta t) \\[5pt]
 \Delta S = \textrm{Po}(-\beta S I \Delta t) \\[5pt]
 \Delta I = \textrm{Po}\big((\beta S I - \alpha I) \Delta t\big)
 \end{cases}
-$$
+```
 
 By repeatedly running the model, we can generate a probability heatmap.
 
