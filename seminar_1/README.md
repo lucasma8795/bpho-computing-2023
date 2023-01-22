@@ -22,10 +22,9 @@ The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in
 ## 1. The Eyam Equations
 The total population ($I + S + D$) should remain constant.
 ```math
-\newcommand\d{\textrm{d}}
 \begin{gather*}
 I + S + D = I_0 + S_0 + \cancel{D_0} \\[5pt]
-\frac{\d I}{\d t} + \frac{\d S}{\d t} + \frac{\d D}{\d t} = 0 \\[5pt]
+\frac{\textrm{d} I}{\textrm{d} t} + \frac{\textrm{d} S}{\textrm{d} t} + \frac{\textrm{d} D}{\textrm{d} t} = 0 \\[5pt]
 \end{gather*}
 ```
 
@@ -33,14 +32,14 @@ The Eyam Equations state that
 ```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \begin{cases}
-\d{D}{t} = \alpha I \\[5pt]
-\d{S}{t} = -\beta S I \\[5pt]
-\d{I}{t} = -\d{D}{t} - \d{S}{t} = \beta S I - \alpha I
+\frac{\textrm{d} D}{\textrm{d} t} = \alpha I \\[5pt]
+\frac{\textrm{d} S}{\textrm{d} t} = -\beta S I \\[5pt]
+\frac{\textrm{d} I}{\textrm{d} t} = -\frac{\textrm{d} D}{\textrm{d} t} - \frac{\textrm{d} S}{\textrm{d} t} = \beta S I - \alpha I
 \end{cases}
 ```
 where $\alpha > 0$ and $\beta > 0$.
 
-It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $ S = \frac{\alpha}{\beta} $. We define this to be $ \rho $, the susceptible threshold. When $ S > \rho$, the epidemic grows; when $ S < \rho $, the epidemic shrinks.
+It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $S = \frac{\alpha}{\beta}$. We define this to be $ \rho $, the susceptible threshold. When $S > \rho$, the epidemic grows; when $S < \rho$, the epidemic shrinks.
 ```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
