@@ -30,7 +30,6 @@ I + S + D = I_0 + S_0 + \cancel{D_0} \\[5pt]
 
 The Eyam Equations state that
 ```math
-\newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \begin{cases}
 \frac{\textrm{d} D}{\textrm{d} t} = \alpha I \\[5pt]
 \frac{\textrm{d} S}{\textrm{d} t} = -\beta S I \\[5pt]
@@ -39,7 +38,7 @@ The Eyam Equations state that
 ```
 where $\alpha > 0$ and $\beta > 0$.
 
-It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $S = \frac{\alpha}{\beta}$. We define this to be $ \rho $, the susceptible threshold. When $S > \rho$, the epidemic grows; when $S < \rho$, the epidemic shrinks.
+It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $I = \frac{\alpha}{\beta}$. By taking $I$ to the 2<sup>nd</sup> derivative, we find that $I$ is maximized when $S = \frac{\alpha}{\beta}$. We define this to be $\rho$, the susceptible threshold. When $S > \rho$, the epidemic grows; when $S < \rho$, the epidemic shrinks.
 ```math
 \newcommand{\d}[2]{\frac{\textrm{d} #1}{\textrm{d} #2}}
 \newcommand{\dtwo}[2]{\frac{\textrm{d}^2 #1}{\textrm{d} #2^2}}
