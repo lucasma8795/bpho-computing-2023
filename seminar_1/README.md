@@ -5,7 +5,7 @@ http://www.eclecticon.info/index_htm_files/BPhO%20CompPhys%2011%20Epidemiology.p
 
 ---
 ## 0. Context
-The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in 1665, caused by the bacterium [Yersinia pestis](https://en.wikipedia.org/wiki/Yersinia_pestis), had 800 inhabitants of the Eyam village quarantined. 260 villagers died over a 14-month period. Rector [William Mompesson](https://en.wikipedia.org/wiki/William_Mompesson) recorded Infected ($I$), Susceptible ($S$) and Dead ($D$) populations. The data is as follows:
+The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in 1665, caused by the bacterium [Yersinia pestis](https://en.wikipedia.org/wiki/Yersinia_pestis), had 800 inhabitants of the Eyam village quarantined. 260 villagers died over a 14-month period. Rector [William Mompesson](https://en.wikipedia.org/wiki/William_Mompesson) recorded Infected ( $I$ ), Susceptible ( $S$ ) and Dead ( $D$ ) populations. The data is as follows:
 | Date | $t$ / months | $S$ | $I$ | $D$ |
 | --- | --- | --- | --- | --- |
 | July 3-4 1666 | 0.00 | 235 | 14.5 | 0 |
