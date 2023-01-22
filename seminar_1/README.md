@@ -20,7 +20,7 @@ The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in
 
 ---
 ## 1. The Eyam Equations
-The total population ($I + S + D$) should remain constant.
+The total population ($I+S+D$) should remain constant.
 ```math
 \begin{gather*}
 I + S + D = I_0 + S_0 + \cancel{D_0} \\[5pt]
@@ -82,7 +82,7 @@ Simulation is performed with an iterative numerical method. \+ markers represent
 ## 3. Stochastic eyam model
 The changes to $S$, $I$ and $D$ are discrete & random. We can utilize this property & the Poisson distribution for our simulation.
 
-If $k$ is the mean rate of an event occuring independently in a time period, then $ \textrm{Po}(k) $ is a distribution that describes the probability of the number of events occuring within the same time period.
+If $k$ is the mean rate of an event occuring independently in a time period, then $\textrm{Po}(k)$ is a distribution that describes the probability of the number of events occuring within the same time period.
 
 We have the following set of modified equations:
 
