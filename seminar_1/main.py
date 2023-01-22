@@ -138,7 +138,7 @@ def draw_rho_regression(X:np.ndarray, y:np.ndarray, m:float):
 	plt.plot(np.linspace(0, max_x, 2), np.linspace(0, max_x, 2)*m, linewidth=1, color="k", linestyle="--")
 
 
-def draw_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Series, line_y:pd.Series, title:str, y_label:str):
+def draw_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Series, line_y:pd.Series, title:str, y_label:str, vmin:float, vmax:float):
 	ax.set_title(title)
 	ax.set_xlabel("t / months")
 	ax.set_ylabel(y_label)
@@ -152,8 +152,22 @@ def draw_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Se
 	kernel = scipy.stats.gaussian_kde(values)
 	f = np.reshape(kernel(positions).T, xx.shape)
 
-	ax.imshow(np.rot90(f), cmap=plt.cm.viridis, extent=[xmin, xmax, ymin, ymax], aspect="auto")
+	im = ax.imshow(np.rot90(f), cmap=plt.cm.jet, extent=[xmin, xmax, ymin, ymax], aspect="auto")
+	im.set_clim(vmin=vmin, vmax=vmax)
 	ax.plot(line_X, line_y, color="k", linestyle="--", linewidth=1)
+
+
+def draw_historical(historical:pd.DataFrame):
+	plt.figure("Historical data")
+	plt.title("Historical data")
+	plt.xlabel("t / months")
+	plt.ylabel("Eyam population")
+
+	plt.plot(historical.t, historical.I, color="r")
+	plt.plot(historical.t, historical.S, color="g")
+	plt.plot(historical.t, historical.D, color="b")
+
+	plt.legend(["Infected (I)", "Surviving (S)", "Dead (D)"])
 
 	
 def main():
@@ -165,6 +179,9 @@ def main():
 	# read in historical data points of S, I & D
 	with open("./data.csv") as fo:
 		historical = pd.read_csv(fo)
+
+	# draw historical data
+	draw_historical(historical)
 
 	# define eyam model constants
 	I_0, S_0 = historical.iloc[0].I, historical.iloc[0].S
@@ -206,21 +223,24 @@ def main():
 		model_X=I_x, model_y=I_y,
 		line_X=model.t, line_y=model.I,
 		title="Infectives",
-		y_label="Infectives (I)"
+		y_label="Infectives (I)",
+		vmin=0, vmax=0.0175
 	)
 	draw_stochastic_kde(
 		ax=axs[0][1],
 		model_X=S_x, model_y=S_y,
 		line_X=model.t, line_y=model.S,
 		title="Susceptibles",
-		y_label="Susceptibles (S)"
+		y_label="Susceptibles (S)",
+		vmin=0, vmax=0.005
 	)
 	draw_stochastic_kde(
 		ax=axs[1][0],
 		model_X=D_x, model_y=D_y,
 		line_X=model.t, line_y=model.D,
 		title="Dead",
-		y_label="Dead (D)"
+		y_label="Dead (D)",
+		vmin=0, vmax=0.005
 	)
 	axs[1][1].axis("off")
 
