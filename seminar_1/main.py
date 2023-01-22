@@ -207,7 +207,7 @@ def main():
 	draw_eyam_model(model=model, historical=historical, alpha=alpha, beta=beta, dt=dt)
 
 	# calculate stochastic model
-	runs = 10000
+	runs = 1000
 	I_x, I_y, S_x, S_y, D_x, D_y = stochastic_eyam_model(runs=runs, **params)
 
 	# display stochastic model
