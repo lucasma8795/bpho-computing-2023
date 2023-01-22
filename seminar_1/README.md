@@ -20,7 +20,7 @@ The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in
 
 ---
 ## 1. The Eyam Equations
-The total population ($I+S+D$) should remain constant.
+The total population ( $I+S+D$ ) should remain constant.
 ```math
 \begin{gather*}
 I + S + D = I_0 + S_0 + \cancel{D_0} \\[5pt]
