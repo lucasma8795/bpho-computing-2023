@@ -48,9 +48,9 @@ def find_RMSE(model:pd.DataFrame, historical:pd.DataFrame, dt:float) -> float:
 			interpolated_D = model.iloc[model_ix].D
 			
 		model_ix = min(len(model)-1, model_ix)
-		total_sq_err += (model.iloc[model_ix].I - row.I) ** 2
-		total_sq_err += (model.iloc[model_ix].S - row.S) ** 2
-		total_sq_err += (model.iloc[model_ix].D - row.D) ** 2
+		total_sq_err += (interpolated_I - row.I) ** 2
+		total_sq_err += (interpolated_S - row.S) ** 2
+		total_sq_err += (interpolated_D - row.D) ** 2
 	
 	return sqrt(total_sq_err / len(historical))
 
