@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import scipy.stats
+from sys import maxsize as INF
 
 
 def find_rho(df:pd.DataFrame) -> Tuple[float, float]:
@@ -27,18 +28,45 @@ def find_rho(df:pd.DataFrame) -> Tuple[float, float]:
 def find_RMSE(model:pd.DataFrame, historical:pd.DataFrame, dt:float) -> float:
 	total_sq_err = 0
 
+	def clamp(num, mn, mx): return max(mn, min(mx, num))
+
 	for _, row in historical.iterrows():
 		# find corresponding entry in model
-		# TODO: interpolate between two intervals
 		model_ix = floor(row.t // dt)
-		model_ix = max(0, model_ix)
-		model_ix = min(len(model)-1, model_ix)
+		next_model_ix = model_ix + 1
+		model_ix, next_model_ix = clamp(model_ix, 0, len(model)-1), clamp(next_model_ix, 0, len(model)-1)
 		
+		if model_ix != next_model_ix:
+			cur_t, next_t = model.iloc[model_ix].t, model.iloc[next_model_ix].t, 
+			interpolated_I = model.iloc[model_ix].I + (model.iloc[next_model_ix].I - model.iloc[model_ix].I) * (row.t - cur_t) / (next_t - cur_t)
+			interpolated_S = model.iloc[model_ix].S + (model.iloc[next_model_ix].S - model.iloc[model_ix].S) * (row.t - cur_t) / (next_t - cur_t)
+			interpolated_D = model.iloc[model_ix].D + (model.iloc[next_model_ix].D - model.iloc[model_ix].D) * (row.t - cur_t) / (next_t - cur_t)
+
+		else:
+			interpolated_I = model.iloc[model_ix].I
+			interpolated_S = model.iloc[model_ix].S
+			interpolated_D = model.iloc[model_ix].D
+			
+		model_ix = min(len(model)-1, model_ix)
 		total_sq_err += (model.iloc[model_ix].I - row.I) ** 2
 		total_sq_err += (model.iloc[model_ix].S - row.S) ** 2
 		total_sq_err += (model.iloc[model_ix].D - row.D) ** 2
 	
 	return sqrt(total_sq_err / len(historical))
+
+
+def search_alpha_naive(alpha_min:float, alpha_max:float, rho:float, historical:pd.DataFrame, dt:float, t_max:float, EPS:float=1e-3) -> float:
+	# loops over possible alpha values within [alpha_min, alpha_max]; returns an optimal alpha
+	optimal_alpha, optimal_rmse = 0, INF
+	I_0, S_0 = historical.iloc[0].I, historical.iloc[0].S
+	SZ = round((alpha_max-alpha_min)/EPS)
+	X, y = np.zeros(shape=(SZ)), np.zeros(shape=(SZ))
+	for idx, alpha in enumerate(np.linspace(alpha_min, alpha_max, SZ)):
+		rmse = find_RMSE(simple_eyam_model(alpha, alpha/rho, dt, t_max, I_0, S_0), historical, dt)
+		if rmse < optimal_rmse:
+			optimal_alpha, optimal_rmse = alpha, rmse
+		X[idx], y[idx] = alpha, rmse
+	return optimal_alpha, optimal_rmse, X, y
 
 
 def search_alpha(alpha_min:float, alpha_max:float, rho:float, historical:pd.DataFrame, dt:float, t_max:float, EPS:float=1e-7) -> float:
@@ -169,7 +197,17 @@ def draw_historical(historical:pd.DataFrame):
 
 	plt.legend(["Infected (I)", "Surviving (S)", "Dead (D)"])
 
+
+def draw_alpha_rmse(alpha:float, rmse:float, rmse_X:np.ndarray, rmse_y:np.ndarray):
+	plt.figure("RMSE graph")
+	plt.title(rf"RMSE graph ($\alpha={alpha:.4f}$)")
+	plt.xlabel(r"$\alpha$")
+	plt.ylabel("RMSE")
+
+	plt.plot(rmse_X, rmse_y, color="k", linestyle="--", alpha=0.75)
+	plt.scatter([alpha], [rmse], s=100, marker="x", color="r", linewidths=2)
 	
+
 def main():
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -190,6 +228,10 @@ def main():
 	# define rho := alpha/beta
 	rho, _, reg_X, reg_y = find_rho(historical)
 	print(f"{rho=:.5f}")
+
+	# draw RMSE against alpha graph
+	alpha, rmse, rmse_X, rmse_y = search_alpha_naive(alpha_min=2.7, alpha_max=3.1, rho=rho, historical=historical, dt=dt, t_max=t_max)
+	draw_alpha_rmse(alpha, rmse, rmse_X, rmse_y)
 
 	# find alpha by minimizing RMSE with historical data
 	alpha = search_alpha(alpha_min=1, alpha_max=5, rho=rho, historical=historical, dt=dt, t_max=t_max)

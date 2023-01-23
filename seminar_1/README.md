@@ -66,17 +66,23 @@ We first find $\rho=\frac{\alpha}{\beta}$ by integrating $\frac{\textrm{d} I}{\t
 
 ![Alpha/beta regression line graph](./images/ab_regression_line.png "Alpha/beta regression line graph")
 
+<small>The points show a linear relationship as shown.</small>
+
 With the given data, we calculate $\rho \approx 163.29$ using linear regression.
 
 We then choose $\alpha$ by minimizing squared error from the historical data.
 
 This can be implemented by e.g. [Ternary search](https://en.wikipedia.org/wiki/Ternary_search) or simply running the model for a range of $\alpha$ values and choosing the minimum.
 
+![RMSE against alpha graph](./images/rmse_curve.png "RMSE against alpha graph")
+
+<small>Note: $\textrm{RMSE}(\alpha)$ is a [unimodal function](https://en.wikipedia.org/wiki/Unimodality).</small>
+
 We find $\alpha \approx 2.9480$ and thus $\beta = \frac{\alpha}{\rho} \approx 0.0181$. Results are below:
 
 ![Eyam model graph](./images/simple_eyam.png "Eyam model graph")
 
-Simulation is performed with an iterative numerical method. \+ markers represent Mompesson's data.
+<small>Simulation is performed with an [iterative numerical method](https://en.wikipedia.org/wiki/Euler_method). \+ markers represent Mompesson's data.</small>
 
 ---
 ## 3. Stochastic eyam model
@@ -97,3 +103,5 @@ We have the following set of modified equations:
 By repeatedly running the model, we can generate a probability heatmap.
 
 ![Stochastic eyam model graph](./images/stochastic_eyam.png "Stochastic eyam model graph")
+
+<small>Note: red represents a high probability; blue represents a low probability.</small>
