@@ -1,13 +1,14 @@
 import signal
 from math import floor, sqrt
+from sys import maxsize as INF
 from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 import scipy.stats
-from sys import maxsize as INF
+import toml
+from sklearn.linear_model import LinearRegression
 
 
 def find_rho(df:pd.DataFrame) -> Tuple[float, float]:
@@ -28,6 +29,7 @@ def find_rho(df:pd.DataFrame) -> Tuple[float, float]:
 def find_RMSE(model:pd.DataFrame, historical:pd.DataFrame, dt:float) -> float:
 	total_sq_err = 0
 
+	# clamp number in range
 	def clamp(num, mn, mx): return max(mn, min(mx, num))
 
 	for _, row in historical.iterrows():
@@ -35,14 +37,21 @@ def find_RMSE(model:pd.DataFrame, historical:pd.DataFrame, dt:float) -> float:
 		model_ix = floor(row.t // dt)
 		next_model_ix = model_ix + 1
 		model_ix, next_model_ix = clamp(model_ix, 0, len(model)-1), clamp(next_model_ix, 0, len(model)-1)
-		
+
+		# historical data may not lie exactly on one interval in the model
+		# we perform interpolation between two intervals in our model
 		if model_ix != next_model_ix:
-			cur_t, next_t = model.iloc[model_ix].t, model.iloc[next_model_ix].t, 
-			interpolated_I = model.iloc[model_ix].I + (model.iloc[next_model_ix].I - model.iloc[model_ix].I) * (row.t - cur_t) / (next_t - cur_t)
-			interpolated_S = model.iloc[model_ix].S + (model.iloc[next_model_ix].S - model.iloc[model_ix].S) * (row.t - cur_t) / (next_t - cur_t)
-			interpolated_D = model.iloc[model_ix].D + (model.iloc[next_model_ix].D - model.iloc[model_ix].D) * (row.t - cur_t) / (next_t - cur_t)
+			cur_model_row = model.iloc[model_ix]
+			next_model_row = model.iloc[next_model_ix]
+			cur_t, next_t = cur_model_row.t, next_model_row.t
+			ratio = (row.t - cur_t) / (next_t - cur_t)
+
+			interpolated_I = cur_model_row.I + (next_model_row.I - cur_model_row.I) * ratio
+			interpolated_S = cur_model_row.S + (next_model_row.S - cur_model_row.S) * ratio
+			interpolated_D = cur_model_row.D + (next_model_row.D - cur_model_row.D) * ratio
 
 		else:
+			# this should not happen!
 			interpolated_I = model.iloc[model_ix].I
 			interpolated_S = model.iloc[model_ix].S
 			interpolated_D = model.iloc[model_ix].D
@@ -56,7 +65,8 @@ def find_RMSE(model:pd.DataFrame, historical:pd.DataFrame, dt:float) -> float:
 
 
 def search_alpha_naive(alpha_min:float, alpha_max:float, rho:float, historical:pd.DataFrame, dt:float, t_max:float, EPS:float=1e-3) -> float:
-	# loops over possible alpha values within [alpha_min, alpha_max]; returns an optimal alpha
+	# loops over possible alpha values within [alpha_min, alpha_max] with interval of EPS; returns an optimal alpha
+	# this is for displaying RMSE against alpha curve; see search_alpha(...) for a more accurate result
 	optimal_alpha, optimal_rmse = 0, INF
 	I_0, S_0 = historical.iloc[0].I, historical.iloc[0].S
 	SZ = round((alpha_max-alpha_min)/EPS)
@@ -70,7 +80,7 @@ def search_alpha_naive(alpha_min:float, alpha_max:float, rho:float, historical:p
 
 
 def search_alpha(alpha_min:float, alpha_max:float, rho:float, historical:pd.DataFrame, dt:float, t_max:float, EPS:float=1e-7) -> float:
-	# performs a ternary search on RMSE(alpha) aiming to minimize; returns an optimal alpha
+	# performs a ternary search on RMSE(alpha) aiming to minimize RMSE; returns an optimal alpha
 	# https://en.wikipedia.org/wiki/Ternary_search
 	I_0, S_0 = historical.iloc[0].I, historical.iloc[0].S
 
@@ -90,6 +100,7 @@ def search_alpha(alpha_min:float, alpha_max:float, rho:float, historical:pd.Data
 	
 
 def simple_eyam_model(alpha:float, beta:float, dt:float, t_max:float, I_0:float, S_0:float) -> pd.DataFrame:
+	# an instance of Euler's method for solving differential equations
 	SZ = floor(t_max / dt) + 1 # quantize time of length t_max into chunks of length dt
 
 	I = np.zeros(shape=(SZ), dtype=np.float64)
@@ -107,6 +118,7 @@ def simple_eyam_model(alpha:float, beta:float, dt:float, t_max:float, I_0:float,
 	df = pd.DataFrame(data={"t": t, "I": I, "S": S, "D": D})
 	return df
 
+# modification of Po(x) to accept negative values as well
 rng = np.random.default_rng()
 def poisson(lam):
 	if lam >= 0: return rng.poisson(lam)
@@ -138,7 +150,7 @@ def stochastic_eyam_model(alpha:float, beta:float, dt:float, t_max:float, I_0:fl
 	return I_x, I_y, S_x, S_y, D_x, D_y
 
 
-def draw_eyam_model(model:pd.DataFrame, historical:pd.DataFrame, alpha:float, beta:float, dt:float) -> None:
+def plot_eyam_model(model:pd.DataFrame, historical:pd.DataFrame, alpha:float, beta:float, dt:float) -> None:
 	plt.figure("Simple Eyam Model")
 	plt.title(rf"Eyam Model ($\alpha={alpha:.4f}, \beta={beta:.4f}, \Delta t={dt}$)")
 	plt.xlabel("t / months")
@@ -155,7 +167,7 @@ def draw_eyam_model(model:pd.DataFrame, historical:pd.DataFrame, alpha:float, be
 	plt.legend(["Infected (I)", "Surviving (S)", "Dead (D)"])
 
 
-def draw_rho_regression(X:np.ndarray, y:np.ndarray, m:float):
+def plot_rho_regression(X:np.ndarray, y:np.ndarray, m:float):
 	plt.figure("Alpha/beta regression line")
 	plt.title("Alpha/beta regression line")
 	plt.xlabel(r"X = $\ln(\frac{S_0}{S})$")
@@ -166,7 +178,7 @@ def draw_rho_regression(X:np.ndarray, y:np.ndarray, m:float):
 	plt.plot(np.linspace(0, max_x, 2), np.linspace(0, max_x, 2)*m, linewidth=1, color="k", linestyle="--")
 
 
-def draw_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Series, line_y:pd.Series, title:str, y_label:str, vmin:float, vmax:float):
+def plot_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Series, line_y:pd.Series, title:str, y_label:str, vmin:float, vmax:float):
 	ax.set_title(title)
 	ax.set_xlabel("t / months")
 	ax.set_ylabel(y_label)
@@ -185,7 +197,7 @@ def draw_stochastic_kde(ax, model_X:np.ndarray, model_y:np.ndarray, line_X:pd.Se
 	ax.plot(line_X, line_y, color="k", linestyle="--", linewidth=1)
 
 
-def draw_historical(historical:pd.DataFrame):
+def plot_historical(historical:pd.DataFrame):
 	plt.figure("Historical data")
 	plt.title("Historical data")
 	plt.xlabel("t / months")
@@ -198,7 +210,7 @@ def draw_historical(historical:pd.DataFrame):
 	plt.legend(["Infected (I)", "Surviving (S)", "Dead (D)"])
 
 
-def draw_alpha_rmse(alpha:float, rmse:float, rmse_X:np.ndarray, rmse_y:np.ndarray):
+def plot_alpha_rmse(alpha:float, rmse:float, rmse_X:np.ndarray, rmse_y:np.ndarray):
 	plt.figure("RMSE graph")
 	plt.title(rf"RMSE graph ($\alpha={alpha:.4f}$)")
 	plt.xlabel(r"$\alpha$")
@@ -209,7 +221,11 @@ def draw_alpha_rmse(alpha:float, rmse:float, rmse_X:np.ndarray, rmse_y:np.ndarra
 	
 
 def main():
+	# enable ctrl-c program termination
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+	# read config file
+	CONFIG = toml.load("./config.toml")
 
 	# symbols:
 	# 	S -> susceptibles, I -> infectives, D -> dead, R -> recovered
@@ -219,22 +235,30 @@ def main():
 		historical = pd.read_csv(fo)
 
 	# draw historical data
-	draw_historical(historical)
+	plot_historical(historical)
 
 	# define eyam model constants
 	I_0, S_0 = historical.iloc[0].I, historical.iloc[0].S
-	dt, t_max = 0.1, 5 # in months
+	dt, t_max = CONFIG["model"]["dt"], CONFIG["model"]["t_max"] # in months
 
 	# define rho := alpha/beta
+	# rho ln(S_0/S) = I_0 + S_0 - I - S
+	# we find rho using linear regression
 	rho, _, reg_X, reg_y = find_rho(historical)
 	print(f"{rho=:.5f}")
 
-	# draw RMSE against alpha graph
+	# plot alpha/beta regression line
+	plot_rho_regression(X=reg_X, y=reg_y, m=rho)
+
+	# plot RMSE against alpha graph
+	# we expect a quadratic-like curve opening upwards
+	# note: this alpha value is for plotting; may be less accurate than below
 	alpha, rmse, rmse_X, rmse_y = search_alpha_naive(alpha_min=2.7, alpha_max=3.1, rho=rho, historical=historical, dt=dt, t_max=t_max)
-	draw_alpha_rmse(alpha, rmse, rmse_X, rmse_y)
+	plot_alpha_rmse(alpha, rmse, rmse_X, rmse_y)
 
 	# find alpha by minimizing RMSE with historical data
-	alpha = search_alpha(alpha_min=1, alpha_max=5, rho=rho, historical=historical, dt=dt, t_max=t_max)
+	alpha_min, alpha_max = CONFIG["search_alpha"]["alpha_min"], CONFIG["search_alpha"]["alpha_max"]
+	alpha = search_alpha(alpha_min=alpha_min, alpha_max=alpha_max, rho=rho, historical=historical, dt=dt, t_max=t_max)
 	beta = alpha / rho
 	print(f"{alpha=:.5f}, {beta=:.5f}")
 
@@ -244,23 +268,23 @@ def main():
 		"I_0": I_0, "S_0": S_0
 	}
 
-	# calculate & display simple eyam model
+	# calculate & plot simple eyam model
 	model = simple_eyam_model(**params)
-	draw_eyam_model(model=model, historical=historical, alpha=alpha, beta=beta, dt=dt)
+	plot_eyam_model(model=model, historical=historical, alpha=alpha, beta=beta, dt=dt)
 
 	# calculate stochastic model
-	runs = 1000
+	runs = CONFIG["stochastic"]["runs"]
 	I_x, I_y, S_x, S_y, D_x, D_y = stochastic_eyam_model(runs=runs, **params)
 
-	# display stochastic model
+	# plot stochastic model
 	fig, axs = plt.subplots(2, 2, num="Stochastic Eyam Model")
 	fig.set_figheight(7.5)
 	fig.set_figwidth(10)
 	fig.tight_layout(pad=4)
 	fig.suptitle(rf"Stochastic Eyam Model ($\alpha={alpha:.4f}, \beta={beta:.4f}, \Delta t={dt}$, runs={runs})")
 
-	if runs >= 1000: print(f"Drawing stochastic model with {runs} runs. This will take a while...")
-	draw_stochastic_kde(
+	if runs > 1000: print(f"Drawing stochastic model with {runs} runs. This will take a while...")
+	plot_stochastic_kde(
 		ax=axs[0][0],
 		model_X=I_x, model_y=I_y,
 		line_X=model.t, line_y=model.I,
@@ -268,7 +292,7 @@ def main():
 		y_label="Infectives (I)",
 		vmin=0, vmax=0.0175
 	)
-	draw_stochastic_kde(
+	plot_stochastic_kde(
 		ax=axs[0][1],
 		model_X=S_x, model_y=S_y,
 		line_X=model.t, line_y=model.S,
@@ -276,7 +300,7 @@ def main():
 		y_label="Susceptibles (S)",
 		vmin=0, vmax=0.005
 	)
-	draw_stochastic_kde(
+	plot_stochastic_kde(
 		ax=axs[1][0],
 		model_X=D_x, model_y=D_y,
 		line_X=model.t, line_y=model.D,
@@ -285,9 +309,6 @@ def main():
 		vmin=0, vmax=0.005
 	)
 	axs[1][1].axis("off")
-
-	# display alpha/beta regression line
-	draw_rho_regression(X=reg_X, y=reg_y, m=rho)
 
 	plt.show()
 

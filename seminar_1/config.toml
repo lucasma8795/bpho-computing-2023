@@ -1,0 +1,10 @@
+[model]
+t_max 		= 5
+dt 			= 0.1
+
+[search_alpha]
+alpha_min	= 1
+alpha_max	= 5
+
+[stochastic]
+runs 		= 500
