@@ -23,10 +23,9 @@ We define the following symbols:
 | $b$ | Semi-minor axis | $\textrm{m}$ | Length of the shortest radius in an ellipse |
 | $\epsilon$ | [Eccentricity](https://en.wikipedia.org/wiki/Eccentricity_(mathematics)) | -- | Uniquely characterizes the shape of a conic section |
 
-
 ...and the following constants:
 | Constant | Name | Value |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | $M_\odot$ | Mass of Sun | $1.989 \times 10^{30}\space\textrm{kg}$ |
 | $m_\oplus$ | Mass of Earth | $5.972 \times 10^{24}\space\textrm{kg}$ |
 | $m_J$ | Mass of Jupiter | $1.898 \times 10^{27}\space\textrm{kg}$ |
@@ -34,7 +33,7 @@ We define the following symbols:
 
 ...and the following units:
 | Unit | Name | Value |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | $1\space\textrm{YR}$ | Days in a year | $ 365.242\space\textrm{days}$ |
 | $1\space\textrm{AU}$ | [Earth-sun distance](https://en.wikipedia.org/wiki/Astronomical_unit) | $1.496 \times 10^{11}\space\textrm{m}$ |
 
