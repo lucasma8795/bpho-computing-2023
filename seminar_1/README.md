@@ -4,7 +4,16 @@ All credits for calculations go to Dr Andrew French, Winchester College.
 http://www.eclecticon.info/index_htm_files/BPhO%20CompPhys%2011%20Epidemiology.pdf
 
 ---
-## 0. Context
+## 0. Table of contents
+- [The Epidemiology of Eyam](#the-epidemiology-of-eyam)
+	- [0. Table of contents](#0-table-of-contents)
+	- [1. Context](#1-context)
+	- [2. The Eyam Equations](#2-the-eyam-equations)
+	- [3. Finding alpha \& beta](#3-finding-alpha--beta)
+	- [4. Stochastic eyam model](#4-stochastic-eyam-model)
+
+---
+## 1. Context
 The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in 1665, caused by the bacterium [Yersinia pestis](https://en.wikipedia.org/wiki/Yersinia_pestis), had 800 inhabitants of the Eyam village quarantined. 260 villagers died over a 14-month period. Rector [William Mompesson](https://en.wikipedia.org/wiki/William_Mompesson) recorded Infected ( $I$ ), Susceptible ( $S$ ) and Dead ( $D$ ) populations. The data is as follows:
 | Date | $t$ / months | $S$ | $I$ | $D$ |
 | --- | --- | --- | --- | --- |
@@ -19,7 +28,7 @@ The [Plague of Eyam](https://en.wikipedia.org/wiki/Eyam#1665_plague_outbreak) in
 ![Historical data](./images/historical.png "Historical data")
 
 ---
-## 1. The Eyam Equations
+## 2. The Eyam Equations
 The total population ( $I+S+D$ ) should remain constant.
 ```math
 \begin{gather*}
@@ -50,7 +59,7 @@ It is apparent that $\frac{\textrm{d} I}{\textrm{d} t} = 0$ when $I = 0$ or $S =
 ```
 
 ---
-## 2. Finding $\alpha$, $\beta$
+## 3. Finding alpha & beta
 We first find $\rho=\frac{\alpha}{\beta}$ by integrating $\frac{\textrm{d} I}{\textrm{d} S}$.
 ```math
 \begin{align*}
@@ -85,7 +94,7 @@ We find $\alpha \approx 2.9480$ and thus $\beta = \frac{\alpha}{\rho} \approx 0.
 <small>Simulation is performed with an [iterative numerical method](https://en.wikipedia.org/wiki/Euler_method). \+ markers represent Mompesson's data.</small>
 
 ---
-## 3. Stochastic eyam model
+## 4. Stochastic eyam model
 The changes to $S$, $I$ and $D$ are discrete & random. We can utilize this property & the Poisson distribution for our simulation.
 
 If $k$ is the mean rate of an event occuring independently in a time period, then $\textrm{Po}(k)$ is a distribution that describes the probability of the number of events occuring within the same time period.
