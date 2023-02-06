@@ -34,7 +34,7 @@ We define the following symbols:
 ...and the following units:
 | Unit | Name | Value |
 | --- | --- | --- |
-| $1\space\textrm{YR}$ | Days in a year | $ 365.242\space\textrm{days}$ |
+| $1\space\textrm{YR}$ | Days in a year | $365.242\space\textrm{days}$ |
 | $1\space\textrm{AU}$ | [Earth-sun distance](https://en.wikipedia.org/wiki/Astronomical_unit) | $1.496 \times 10^{11}\space\textrm{m}$ |
 
 Kepler's Third Law can be now expressed as an equation:
