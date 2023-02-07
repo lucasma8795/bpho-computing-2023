@@ -30,14 +30,27 @@ def plot_kepler_III(planet_data:pd.DataFrame, planet_names:List[str]):
 
 	plt.figure("Kepler's Third Law")
 	plt.title("Kepler's Third Law")
-	plt.xlabel("$a^3$ (AU)")
-	plt.ylabel("$P^2$ (year)")
+	plt.xlabel(r"$(a / AU)^3$")
+	plt.ylabel(r"$(P / YR)^2$")
 	plt.scatter(X, y, s=50, marker="+", color="k", linewidths=0.8)
 	# planet name annotations
 	for idx, row in planet_data.iterrows():
 		plt.annotate(planet_names[idx], (row.a**3, row.P**2))
 	# regression line
 	plt.plot(np.linspace(0, X.max(), 2), np.linspace(0, X.max(), 2)*m, linewidth=1, color="k", linestyle="--")
+
+
+def plot_kepler_III_modified(exoplanet_data:pd.DataFrame):
+	X = 3 * np.log(exoplanet_data.a)
+	y = 2 * np.log(exoplanet_data.P / YR) + np.log(exoplanet_data.M + exoplanet_data.m * M_jupiter / M_sun)
+
+	plt.figure("Kepler's Third Law (modified)")
+	plt.title("Kepler's Third Law on exoplanets")
+	plt.xlabel(r"$3 \log\left(\frac{a}{AU}\right)$")
+	plt.ylabel(r"$2 \log\left(\frac{P}{YR}\right) + \log\left(\frac{M}{M_\odot} + \frac{m}{m_J}\times\frac{m_J}{M_\odot}\right)$")
+	plt.scatter(X, y, s=50, marker="+", color="k", linewidths=0.8)
+	plt.plot(np.linspace(X.min(), X.max(), 2), np.linspace(X.min(), X.max(), 2), color="g", alpha=0.5, linestyle="--")
+	plt.legend(["Data", "Kepler III"])
 
 
 def main():
@@ -59,6 +72,8 @@ def main():
 	# read in exoplanet data
 	with open("./data/exoplanets.csv", "r") as fo:
 		exoplanet_data = pd.read_csv(fo)
+
+	plot_kepler_III_modified(exoplanet_data)
 
 	plt.show()
 
