@@ -64,7 +64,7 @@ The gradient is approximately $1.000$ as expected.
 ---
 ## 2. Exoplanets
 We obtain exoplanet data from [The Extrasolar Planets Encyclopedia](http://www.exoplanet.eu/).
-After pre-processing, 1012 exoplanets remain.
+After pre-processing, 987 exoplanets remain.
 
 ```
 >> exoplanet_data
