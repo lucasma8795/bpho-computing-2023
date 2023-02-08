@@ -40,17 +40,25 @@ def plot_kepler_III(planet_data:pd.DataFrame, planet_names:List[str]):
 	plt.plot(np.linspace(0, X.max(), 2), np.linspace(0, X.max(), 2)*m, linewidth=1, color="k", linestyle="--")
 
 
-def plot_kepler_III_modified(exoplanet_data:pd.DataFrame):
-	X = 3 * np.log(exoplanet_data.a)
-	y = 2 * np.log(exoplanet_data.P / YR) + np.log(exoplanet_data.M + exoplanet_data.m * M_jupiter / M_sun)
+def plot_kepler_III_modified(df:pd.DataFrame):
+	X = 3 * np.log(df.a)
+	X_min = 3 * np.log(df.a - df.a_errmax)
+	X_max = 3 * np.log(df.a + df.a_errmax)
+
+	tmp = np.log(df.M + df.m * M_jupiter / M_sun)
+	y = 2 * np.log(df.P / YR) + tmp
+	y_min = 2 * np.log((df.P - df.P_errmax) / YR) + tmp
+	y_max = 2 * np.log((df.P + df.P_errmax) / YR) + tmp
 
 	plt.figure("Kepler's Third Law (modified)")
 	plt.title("Kepler's Third Law on exoplanets")
 	plt.xlabel(r"$3 \log\left(\frac{a}{AU}\right)$")
 	plt.ylabel(r"$2 \log\left(\frac{P}{YR}\right) + \log\left(\frac{M}{M_\odot} + \frac{m}{m_J}\times\frac{m_J}{M_\odot}\right)$")
-	plt.scatter(X, y, s=50, marker="+", color="k", linewidths=0.8)
-	plt.plot(np.linspace(X.min(), X.max(), 2), np.linspace(X.min(), X.max(), 2), color="g", alpha=0.5, linestyle="--")
-	plt.legend(["Data", "Kepler III"])
+	
+	plt.errorbar(X, y, xerr=[X-X_min, X_max-X], yerr=[y-y_min, y_max-y], marker="+", c="k", elinewidth=1, lw=0, zorder=1, capsize=2)
+	
+	plt.plot(np.linspace(X.min(), X.max(), 2), np.linspace(X.min(), X.max(), 2), color="r", linestyle="--", lw=1)
+	plt.legend(["Kepler III", "Data"])
 
 
 def main():
@@ -62,7 +70,7 @@ def main():
 		planet_data = pd.read_csv(fo)
 
 	# read config file
-	CONFIG = toml.load("./config.toml")
+	# CONFIG = toml.load("./config.toml")
 
 	planet_names = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
 
@@ -73,6 +81,7 @@ def main():
 	with open("./data/exoplanets.csv", "r") as fo:
 		exoplanet_data = pd.read_csv(fo)
 
+	# draw relationship between a, P, M and m with modified Kepler III
 	plot_kepler_III_modified(exoplanet_data)
 
 	plt.show()
